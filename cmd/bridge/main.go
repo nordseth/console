@@ -27,15 +27,6 @@ var (
 const (
 	k8sInClusterCA          = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 	k8sInClusterBearerToken = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-
-	// Well-known location of Prometheus service for OpenShift. This is only accessible in-cluster.
-	openshiftPrometheusHost = "prometheus-k8s.openshift-monitoring.svc:9091"
-
-	// The tenancy service port (9092) performs RBAC checks for namespace-specific queries.
-	openshiftPrometheusTenancyHost = "prometheus-k8s.openshift-monitoring.svc:9092"
-
-	// Well-known location of Alert Manager service for OpenShift. This is only accessible in-cluster.
-	openshiftAlertManagerHost = "alertmanager-main.openshift-monitoring.svc:9094"
 )
 
 func main() {
@@ -88,6 +79,13 @@ func main() {
 	fGoogleTagManagerID := fs.String("google-tag-manager-id", "", "Google Tag Manager ID. External analytics are disabled if this is not set.")
 
 	fLoadTestFactor := fs.Int("load-test-factor", 0, "DEV ONLY. The factor used to multiply k8s API list responses for load testing purposes.")
+
+	fPrometheusHost := fs.String("prometheus-host", "prometheus-k8s.openshift-monitoring.svc:9091", "Prometheus service for OpenShift. This is only accessible in-cluster.")
+	fPrometheusScheme := fs.String("prometheus-scheme", "https", "https | http")
+	fPrometheusTenancyHost := fs.String("prometheus-tenancy-host", "prometheus-k8s.openshift-monitoring.svc:9092", "The tenancy service port (9092) performs RBAC checks for namespace-specific queries.")
+	fPrometheusTenancyScheme := fs.String("prometheus-tenancy-scheme", "https", "https | http")
+	fAlertManagerHost := fs.String("alert-manager-host", "alertmanager-main.openshift-monitoring.svc:9094", "Alert Manager service for OpenShift. This is only accessible in-cluster.")
+	fAlertManagerScheme := fs.String("alert-manager-scheme", "https", "https | http")
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
@@ -253,24 +251,54 @@ func main() {
 			if !monitoringProxyRootCAs.AppendCertsFromPEM(serviceCertPEM) {
 				log.Fatalf("no CA found for Kubernetes services")
 			}
-			monitoringProxyTLSConfig := &tls.Config{RootCAs: monitoringProxyRootCAs}
+			serviceProxyTLSConfig := &tls.Config{RootCAs: monitoringProxyRootCAs}
+
+			if *fPrometheusScheme == "https" {
+				srv.PrometheusProxyConfig = &proxy.Config{
+					TLSClientConfig: serviceProxyTLSConfig,
+					HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
+					Endpoint:        &url.URL{Scheme: "https", Host: *fPrometheusHost, Path: "/api"},
+				}
+			}
+
+			if *fPrometheusTenancyScheme == "https" {
+				srv.PrometheusTenancyProxyConfig = &proxy.Config{
+					TLSClientConfig: serviceProxyTLSConfig,
+					HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
+					Endpoint:        &url.URL{Scheme: "https", Host: *fPrometheusTenancyHost, Path: "/api"},
+				}
+			}
+
+			if *fAlertManagerScheme == "https" {
+				srv.AlertManagerProxyConfig = &proxy.Config{
+					TLSClientConfig: serviceProxyTLSConfig,
+					HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
+					Endpoint:        &url.URL{Scheme: "https", Host: *fAlertManagerHost, Path: "/api"},
+				}
+			}
+		}
+		
+		if *fPrometheusScheme == "http" {
 			srv.PrometheusProxyConfig = &proxy.Config{
-				TLSClientConfig: monitoringProxyTLSConfig,
 				HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
-				Endpoint:        &url.URL{Scheme: "https", Host: openshiftPrometheusHost, Path: "/api"},
-			}
-			srv.PrometheusTenancyProxyConfig = &proxy.Config{
-				TLSClientConfig: monitoringProxyTLSConfig,
-				HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
-				Endpoint:        &url.URL{Scheme: "https", Host: openshiftPrometheusTenancyHost, Path: "/api"},
-			}
-			srv.AlertManagerProxyConfig = &proxy.Config{
-				TLSClientConfig: monitoringProxyTLSConfig,
-				HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
-				Endpoint:        &url.URL{Scheme: "https", Host: openshiftAlertManagerHost, Path: "/api"},
+				Endpoint:        &url.URL{Scheme: "http", Host: *fPrometheusHost, Path: "/api"},
 			}
 		}
 
+		if *fPrometheusTenancyScheme == "http" {
+			srv.PrometheusTenancyProxyConfig = &proxy.Config{
+				HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
+				Endpoint:        &url.URL{Scheme: "http", Host: *fPrometheusTenancyHost, Path: "/api"},
+			}
+		}
+
+		if *fAlertManagerScheme == "http" {
+			srv.AlertManagerProxyConfig = &proxy.Config{
+				HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
+				Endpoint:        &url.URL{Scheme: "http", Host: *fAlertManagerHost, Path: "/api"},
+			}
+		}
+	
 	case "off-cluster":
 		k8sEndpoint = validateFlagIsURL("k8s-mode-off-cluster-endpoint", *fK8sModeOffClusterEndpoint)
 
