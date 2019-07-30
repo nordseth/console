@@ -277,7 +277,7 @@ func main() {
 				}
 			}
 		}
-		
+
 		if *fPrometheusScheme == "http" {
 			srv.PrometheusProxyConfig = &proxy.Config{
 				HeaderBlacklist: []string{"Cookie", "X-CSRFToken"},
@@ -298,7 +298,7 @@ func main() {
 				Endpoint:        &url.URL{Scheme: "http", Host: *fAlertManagerHost, Path: "/api"},
 			}
 		}
-	
+
 	case "off-cluster":
 		k8sEndpoint = validateFlagIsURL("k8s-mode-off-cluster-endpoint", *fK8sModeOffClusterEndpoint)
 
@@ -350,7 +350,8 @@ func main() {
 			refererPath = srv.BaseURL.String()
 		)
 
-		scopes := []string{"openid", "email", "profile", "groups"}
+		// removed "groups" scope, not supported on Azure AD
+		scopes := []string{"openid", "email", "profile"}
 		authSource := auth.AuthSourceTectonic
 
 		if *fUserAuth == "openshift" {
