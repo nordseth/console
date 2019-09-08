@@ -43,7 +43,7 @@ const Graphs = requirePrometheus(({namespace}) => {
               <Gauge title="Controller Managers Up" query={'(sum(up{job="kube-controller-manager"} == 1) / count(up{job="kube-controller-manager"})) * 100'} invert={true} thresholds={{warn: 15, error: 50}} />
             </div>
             <div className="col-md-3 col-sm-6">
-              <Gauge title="Schedulers Up" query={'(sum(up{job="scheduler"} == 1) / count(up{job="scheduler"})) * 100'} invert={true} thresholds={{warn: 15, error: 50}} />
+              <Gauge title="Schedulers Up" query={'(sum(up{job="kube-scheduler"} == 1) / count(up{job="kube-scheduler"})) * 100'} invert={true} thresholds={{warn: 15, error: 50}} />
             </div>
             <div className="col-md-3 col-sm-6">
               <Gauge title="API Request Success Rate" query={'sum(rate(apiserver_request_count{code=~"2.."}[5m])) / sum(rate(apiserver_request_count[5m])) * 100'} invert={true} thresholds={{warn: 15, error: 30}} />
