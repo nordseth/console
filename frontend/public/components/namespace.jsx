@@ -188,9 +188,9 @@ export const TopPodsBarChart = ({ns}) => (
   <Bar
     title="Memory Usage by Pod (Top 10)"
     namespace={ns.metadata.name}
-    query={`sort(topk(10, sum by (pod_name)(container_memory_usage_bytes{container_name!="POD",container_name!="",pod_name!="", namespace="${ns.metadata.name}"})))`}
+    query={`sort(topk(10, sum by (pod)(container_memory_usage_bytes{container!="POD",container!="",pod!="", namespace="${ns.metadata.name}"})))`}
     humanize={humanizeMem}
-    metric="pod_name" />
+    metric="pod" />
 );
 
 const ResourceUsage = requirePrometheus(({ns}) => <div className="co-m-pane__body">

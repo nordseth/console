@@ -130,13 +130,13 @@ export const PodContainerTable = ({heading, containers, pod}) => <React.Fragment
 const PodGraphs = requirePrometheus(({pod}) => <React.Fragment>
   <div className="row">
     <div className="col-md-4">
-      <Line title="Memory Usage" namespace={pod.metadata.namespace} query={`pod_name:container_memory_usage_bytes:sum{pod_name='${pod.metadata.name}',namespace='${pod.metadata.namespace}'}`} />
+      <Line title="Memory Usage" namespace={pod.metadata.namespace} query={`pod:container_memory_usage_bytes:sum{pod='${pod.metadata.name}',namespace='${pod.metadata.namespace}'}`} />
     </div>
     <div className="col-md-4">
-      <Line title="CPU Usage" namespace={pod.metadata.namespace} query={`pod_name:container_cpu_usage:sum{pod_name='${pod.metadata.name}',namespace='${pod.metadata.namespace}'}`} />
+      <Line title="CPU Usage" namespace={pod.metadata.namespace} query={`pod:container_cpu_usage:sum{pod='${pod.metadata.name}',namespace='${pod.metadata.namespace}'}`} />
     </div>
     <div className="col-md-4">
-      <Line title="Filesystem" namespace={pod.metadata.namespace} query={`pod_name:container_fs_usage_bytes:sum{pod_name='${pod.metadata.name}',namespace='${pod.metadata.namespace}'}`} />
+      <Line title="Filesystem" namespace={pod.metadata.namespace} query={`pod:container_fs_usage_bytes:sum{pod='${pod.metadata.name}',namespace='${pod.metadata.namespace}'}`} />
     </div>
   </div>
 
