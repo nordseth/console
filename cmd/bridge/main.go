@@ -476,7 +476,7 @@ func main() {
 			refererPath = srv.BaseURL.String()
 		)
 
-		scopes := []string{"openid", "email", "profile", "groups"}
+		scopes := []string{"openid", "email", "profile"}
 		authSource := auth.AuthSourceTectonic
 
 		if *fUserAuth == "openshift" {
