@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f
+	github.com/deislabs/oras v0.11.1 // indirect
 	github.com/devfile/api/v2 v2.0.0-20211021164004-dabee4e633ed
 	github.com/devfile/library v1.2.1-0.20211104222135-49d635cb492f
 	github.com/devfile/registry-support/index/generator v0.0.0-20211012185733-0a73f866043f
@@ -15,23 +16,21 @@ require (
 	github.com/openshift/api v0.0.0-20211103080632-8981c8822dfa
 	github.com/openshift/library-go v0.0.0-20200424095618-2aeb4725dadf
 	github.com/operator-framework/kubectl-operator v0.3.0
-	github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35 // indirect
-	github.com/prometheus/client_golang v1.11.0
+	github.com/prometheus/client_golang v1.14.0
 	github.com/rawagner/graphql-transport-ws v0.0.0-20200817140314-dcfbf0388067
-	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	gopkg.in/square/go-jose.v2 v2.4.1 // indirect
+	golang.org/x/net v0.5.0
+	golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b
 	gopkg.in/yaml.v2 v2.4.0
-	helm.sh/helm/v3 v3.6.2
-	k8s.io/api v0.22.1
-	k8s.io/apiextensions-apiserver v0.21.3
-	k8s.io/apimachinery v0.22.1
-	k8s.io/cli-runtime v0.21.0
-	k8s.io/client-go v0.22.1
+	helm.sh/helm/v3 v3.11.1
+	k8s.io/api v0.26.0
+	k8s.io/apiextensions-apiserver v0.26.0
+	k8s.io/apimachinery v0.26.0
+	k8s.io/cli-runtime v0.26.0
+	k8s.io/client-go v0.26.0
 	k8s.io/klog v1.0.0
-	k8s.io/klog/v2 v2.9.0
+	k8s.io/klog/v2 v2.80.1
 	sigs.k8s.io/controller-runtime v0.9.5
-	sigs.k8s.io/yaml v1.2.0
+	sigs.k8s.io/yaml v1.3.0
 )
 
 replace (
